@@ -1,3 +1,4 @@
 .env
 .venv/
 vectors/
+links.csv
