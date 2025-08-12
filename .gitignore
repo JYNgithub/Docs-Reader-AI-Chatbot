@@ -1,4 +1,3 @@
 .env
 .venv/
-chroma_langchain_db/
-chroma_langchain_db\8b2b4eaa-860d-4c59-be37-5bc7003dd39a/
+vectors/
