@@ -11,7 +11,7 @@ from playwright.sync_api import sync_playwright
 
 # Configure links to scrape
 BASE_URL = [
-    "https://docs.trychroma.com/docs",
+    "https://docs.streamlit.io/develop/api-reference",
 ]
 
 # Configure logging
@@ -52,7 +52,7 @@ def fetch_links(base_urls):
         browser.close()
 
     df = pd.DataFrame(list(all_links), columns=["Links"])
-    df.to_csv("links.csv", index=False)
+    df.to_csv("./etc/links.csv", index=False)
     logging.info(f"Total unique links saved: {len(all_links)}")
     
     return list(all_links)
