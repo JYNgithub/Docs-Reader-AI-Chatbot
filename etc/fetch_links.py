@@ -11,7 +11,7 @@ from playwright.sync_api import sync_playwright
 
 # Configure links to scrape
 BASE_URL = [
-    "https://docs.streamlit.io/develop/api-reference",
+    "https://spark.apache.org/docs/latest/api/python/getting_started/",
 ]
 
 # Configure logging
