@@ -1,7 +1,7 @@
 This project is still under development.
 
 Libraries available:
-Chroma
+Chroma, PySpark, Pillow
 
 Note: Some documentation needs to parse the sitemap, then filter the links, rather than accessing through a root link. 
 
