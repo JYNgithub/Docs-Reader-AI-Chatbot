@@ -1,3 +1,4 @@
 .env
 .venv/
 vectors/
+utils/__pycache__/
