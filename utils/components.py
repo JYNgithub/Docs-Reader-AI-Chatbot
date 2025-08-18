@@ -29,7 +29,11 @@ def confirm_collection(CLIENT, LIBRARY_NAME):
     else:
         logging.info(f"A new collection will be created...")
 
-def fetch_links(BASE_URL, LIBRARY_NAME):
+def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL = None):
+    
+    if EXCLUDE_URL is None:
+        EXCLUDE_URL = []
+        
     all_links = set(BASE_URL)
     to_crawl = list(BASE_URL)
 
@@ -59,12 +63,13 @@ def fetch_links(BASE_URL, LIBRARY_NAME):
 
         browser.close()
 
-    df = pd.DataFrame(list(all_links), columns=["Links"])
+    filtered_links = [link for link in all_links if link not in EXCLUDE_URL]
+    df = pd.DataFrame(filtered_links, columns=["Links"])
     df["Scraped"] = False
     df.to_csv(f"./utils/{LIBRARY_NAME}_links.csv", index=False)
-    logging.info(f"Total unique links saved: {len(all_links)}")
+    logging.info(f"Total unique links saved: {len(filtered_links)}")
     
-    return list(all_links)
+    return filtered_links
 
 def scrape_page(urls, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME):
     
