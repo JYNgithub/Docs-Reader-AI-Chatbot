@@ -2,3 +2,4 @@
 .venv/
 vectors/
 utils/__pycache__/
+test.py

@@ -3,15 +3,13 @@ This project is still under development.
 Libraries available:
 Chroma, PySpark, Pillow
 
-Note: Some documentation needs to parse the sitemap, then filter the links, rather than accessing through a root link. 
+TODO: Prompt engineering - limit chat history, relate past queries to current.   
+Refer https://github.com/iryna-savchuk/IR-and-RAG-with-Chroma
 
-Note: Current scrapers are only meant to be run once
+TODO: Make a function that can scrape through sitemaps
 
-TODO: Prompt engineering - limit chat history, relate past queries to current
+~~TODO: Fix _get_collection (remove and replace with improved logic)~~
 
-TODO: Setup actual chat GUI
-
-TODO: Make a new script that can scrape through sitemaps
-
+~~TODO: Setup actual chat GUI~~ (basic layout done)
 
 
