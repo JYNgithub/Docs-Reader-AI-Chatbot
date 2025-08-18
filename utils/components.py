@@ -3,7 +3,6 @@ import sys
 import time
 import uuid
 import logging
-import chromadb
 import pandas as pd
 from datetime import datetime
 from urllib.parse import urldefrag
@@ -13,21 +12,31 @@ from playwright.sync_api import sync_playwright
 # Utility Functions
 ########################################################
 
-def confirm_collection(CLIENT, LIBRARY_NAME):
+def setup_collection(CLIENT, LIBRARY_NAME):
 
     collections = CLIENT.list_collections()
 
     if any(c.name == f"{LIBRARY_NAME}_docs" for c in collections):
-        logging.info("The collection already exists...")
-        confirm = input(f"Delete '{LIBRARY_NAME}_docs' and recreate? (y/n): ").strip().lower()
-        if confirm == "y":
-            CLIENT.delete_collection(name=f"{LIBRARY_NAME}_docs")
-            time.sleep(3)
-            CLIENT.create_collection(name=f"{LIBRARY_NAME}_docs")
-        else:
-            sys.exit()
+        # Note: deleting before creating is risky behaviour, fix later
+        logging.info("Replacing existing collection...")
+        CLIENT.delete_collection(name=f"{LIBRARY_NAME}_docs")
+        time.sleep(3)
+        CLIENT.create_collection(
+            name=f"{LIBRARY_NAME}_docs",
+            metadata={
+                "description": f"Documentation for {LIBRARY_NAME}",
+                "created": str(datetime.now())
+            }  
+        )
     else:
         logging.info(f"A new collection will be created...")
+        CLIENT.create_collection(
+            name=f"{LIBRARY_NAME}_docs",
+            metadata={
+                "description": f"Documentation for {LIBRARY_NAME}",
+                "created": str(datetime.now())
+            }  
+        )
 
 def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL = None):
     
@@ -73,7 +82,7 @@ def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL = None):
 
 def scrape_page(urls, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME):
     
-    collection = _get_collection(CLIENT, LIBRARY_NAME)
+    collection = CLIENT.get_collection(name=f"{LIBRARY_NAME}_docs")
     
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -124,16 +133,3 @@ def _data_preprocessing(content):
     content = re.sub(r'\n{2,}', '\n', content)
     
     return content
-
-def _get_collection(CLIENT, LIBRARY_NAME):
-
-    collection = CLIENT.get_or_create_collection(
-        name=f"{LIBRARY_NAME}_docs",
-        # embedding_function=
-        metadata={
-            "description": f"Documentation for {LIBRARY_NAME}",
-            "created": str(datetime.now())
-        }   
-    )
-    
-    return collection
