@@ -1,6 +1,6 @@
 import logging
 import chromadb
-from components import confirm_collection, fetch_links, scrape_page
+from components import setup_collection, fetch_links, scrape_page
 
 ########################################################
 # Configuration
@@ -34,7 +34,7 @@ logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
 
 def main():
     
-    confirm_collection(CLIENT, LIBRARY_NAME)
+    setup_collection(CLIENT, LIBRARY_NAME)
     
     all_links = fetch_links(BASE_URL, LIBRARY_NAME)
     
