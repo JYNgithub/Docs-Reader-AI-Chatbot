@@ -12,6 +12,12 @@ BASE_URL = [
     "https://docs.trychroma.com/docs",
 ]
 
+EXCLUDE_URL = [
+    "https://docs.trychroma.com/docs/overview/contributing",
+    "https://docs.trychroma.com/docs/overview/telemetry",
+    "https://docs.trychroma.com/docs/cli/sample-apps"
+]
+
 # Configure basic information
 LIBRARY_NAME = "chroma"
 TAG_TO_SCRAPE = "article"
