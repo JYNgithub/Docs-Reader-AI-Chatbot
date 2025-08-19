@@ -1,6 +1,7 @@
 import yaml
 import logging
 import chromadb
+import asyncio
 from components import setup_collection, fetch_links, scrape_page
 
 ########################################################
@@ -8,7 +9,7 @@ from components import setup_collection, fetch_links, scrape_page
 ########################################################
 
 # Configure library name
-LIBRARY_NAME = "langgraph"
+LIBRARY_NAME = "chroma"
 
 # Configure basic information
 with open("./utils/libraries.yaml") as f:
@@ -31,10 +32,10 @@ logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
 def main():
     
     setup_collection(CLIENT, LIBRARY_NAME)
-    
-    all_links = fetch_links(BASE_URL, LIBRARY_NAME, max_links=2)
-    
-    scrape_page(all_links, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME)
+
+    all_links = asyncio.run(fetch_links(BASE_URL, LIBRARY_NAME))
+
+    asyncio.run(scrape_page(all_links, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME))
 
 if __name__ == '__main__':
     main()
