@@ -5,16 +5,13 @@ This is a chatbot specifically for documentations of selected Python libraries.
 Can it build your whole project with one prompt? No  
 Can it give you accurate syntax and information based on official documentation? Yes  
 
-Libraries available:
-Chroma, PySpark, Pillow, LangGraph
+Note: As this remains a hobby project, it will inevitably be limited in terms of scalability and total libraries it can scrape.
 
-TODO: Limit chat history, relate past queries to current.   
+TODO: Add pruning after every scrape?
 
 TODO: Make a function that can scrape through sitemaps
 
-TODO: GUI - Installation of library, with expander to show progress  
-
-TODO: Dockerize (later priority)
+TODO: Dockerize (later priority) / Deploy?
 
 Refer https://github.com/iryna-savchuk/IR-and-RAG-with-Chroma
 

@@ -1,7 +1,11 @@
 import time
 import streamlit as st
+import random
 
 def sleepy():
-    for i in range(5):
-        st.text("Hello world")
-        time.sleep(1)
+    with st.expander("Show Text"):
+        for _ in range(20):
+            st.text(f"Random number: {random.randint(1, 100)}")
+            time.sleep(1)
+
+sleepy()
