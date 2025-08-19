@@ -11,7 +11,7 @@ from playwright.sync_api import sync_playwright
 
 # Configure links to scrape
 BASE_URL = [
-    "https://spark.apache.org/docs/latest/api/python/getting_started/",
+    "https://langchain-ai.github.io/langgraph/",
 ]
 
 # Configure logging
