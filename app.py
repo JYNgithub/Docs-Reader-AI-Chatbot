@@ -1,22 +1,25 @@
 import os
 import chromadb
 import streamlit as st
+import yaml
 from openai import OpenAI
 from dotenv import load_dotenv
-
+import subprocess
+import streamlit as st
+import io
+import sys
+from contextlib import redirect_stdout
+from etc.sleep import sleepy
+from etc.sleep import sleepy
+    
 ######################################################
 # Configuration
 ######################################################
 
-# Load keys (local)
-load_dotenv()
-
-# Configure OpenAI client
-OPENAI_KEY = os.getenv("OPENAI_KEY")
-OPENAI_CLIENT = OpenAI(api_key=OPENAI_KEY)
-
-# Configure basic information
-LIBRARY_LIST = ["chroma", "pyspark", "pillow"]
+# Configure list of libraries
+with open("./utils/libraries.yaml", "r") as f:
+    data = yaml.safe_load(f)
+LIBRARY_LIST = list(data.keys())
 
 # Configure ChromaDB client
 if "client" not in st.session_state:
@@ -24,22 +27,62 @@ if "client" not in st.session_state:
 
 # Initialize session state variables
 if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = "gpt-5-nano"
+    st.session_state["openai_model"] = "gpt-4o-mini"
 if "history" not in st.session_state:
     st.session_state.history = []
-if "selected_library" not in st.session_state:
-    st.session_state.selected_library = LIBRARY_LIST[0]  # Default to first option
-
+if "library_name" not in st.session_state:
+    st.session_state.library_name = LIBRARY_LIST[0]  # Default to first option
+    
 ######################################################
 # Utility Functions
-######################################################      
+###################################################### 
 
-def prompt_with_rag(user_query, library_name):
+def run_scraper():
+    script_path = os.path.join(".", "etc", "sleep.py")
+
+    st.session_state.scraper_running = True
+    placeholder = st.empty()  # for streaming output
+    full_text = ""
+
+    process = subprocess.Popen(
+        ["python", script_path],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
+        universal_newlines=True
+    )
+
+    for line in process.stdout:
+        full_text += line
+        placeholder.text(full_text)  # update in real time
+
+    process.stdout.close()
+    process.wait()
+    st.session_state.scraper_running = False
+
+def prompt_expansion(query, library_name):
+    
+    response = OPENAI_CLIENT.chat.completions.create(
+        model=st.session_state["openai_model"],
+        messages=[
+            {"role": "system", "content": f"You are a knowledgeable developer in a Python library/tool called {library_name}. Answer in 3 short and concise sentences without any code."},
+            {"role": "user", "content": query}
+        ],
+    )
+    
+    ai_response = response.choices[0].message.content.strip()
+
+    expanded_prompt = f"{query} {ai_response}"
+    
+    return expanded_prompt
+         
+def prompt_with_rag(query, library_name):
     
     collection = st.session_state.client.get_collection(name=f"{library_name}_docs")
     
     result = collection.query(
-        query_texts=[user_query],
+        query_texts=[query],
         include=["documents","metadatas"],
         n_results = 5
     )
@@ -51,31 +94,28 @@ def prompt_with_rag(user_query, library_name):
     
     metas = result.get("metadatas", [])
     metadata_list = metas[0] if metas else []
-    if metadata_list:
-        links = [m["url"] for m in metadata_list if "url" in m]
-        st.markdown("**Sources:**\n" + "\n".join(f"- {link}" for link in links))
 
     prompt = (
-        f"As a coding assistant, use the following context to answer the question in a concise, simple and straightforward manner. "
+        f"As a beginner-friendly coding assistant, use the following context to answer the question concisely and shortly. Provide short, simple and easy to understand code. Prevent using custom functions. "
         f"For every code chunk, wrap it in triple backticks and specify the language after the opening backticks.\n\n"
         f"Context:\n{context}\n\n"
-        f"Question: {user_query}\nAnswer:"
+        f"Question: {query}\nAnswer:"
     )
     
     print("---------------------------------------------------------")
-    print(prompt)
-    return prompt    
+    # print(prompt)
+    return prompt, metadata_list    
 
-def prompt_without_rag(user_query):
+def prompt_without_rag(query):
     
     prompt = (
-        f"As a coding assistant, answer the question in a concise, simple and straightforward manner. " 
+        f"As a beginner-friendly coding assistant, answer the question concisely and shortly. Provide short, simple and easy to understand code. Prevent using custom functions. " 
         f"For every code chunk, wrap it in triple backticks and specify the language after the opening backticks.\n\n"
-        f"Question: {user_query}\nAnswer:"
+        f"Question: {query}\nAnswer:"
     )
     
     print("---------------------------------------------------------")
-    print(prompt)
+    # print(prompt)
     return prompt 
         
 ######################################################
@@ -88,52 +128,107 @@ st.set_page_config(
     layout="wide"
 )
 
+# Landing page 
+with st.container():
+    load_dotenv()
+    OPENAI_KEY = os.getenv("OPENAI_KEY")
+    if not OPENAI_KEY and "user_openai_key" in st.session_state:
+        OPENAI_KEY = st.session_state["user_openai_key"]
+    if not OPENAI_KEY:
+        st.title("👋 Welcome to DocsReader")
+        st.markdown("<div style='height:80px'></div>", unsafe_allow_html=True)
+        st.markdown(
+            """
+            <p style='font-size:18px'>
+                To get started, please enter your <b>OpenAI API key</b> in the sidebar (bottom-left corner).
+            </p>
+            <p style='font-size:18px'>
+                If you don’t have one yet, you can create it by logging in at
+                <a href='https://openai.com/api/' target='_blank'>https://openai.com/api/</a>.
+            </p>
+            """,
+            unsafe_allow_html=True
+        )
+        st.stop()
+    OPENAI_CLIENT = OpenAI(api_key=OPENAI_KEY)
+
 # Sidebar
 with st.sidebar:
+    
     st.title("DocsReader")  
-
-    st.markdown('<div style="height: calc(100vh - 385px);"></div>', unsafe_allow_html=True)
+    
+    st.markdown('<div style="height: calc(100vh - 475px);"></div>', unsafe_allow_html=True)
 
     st.markdown('---')
     
-    selected_library = st.selectbox(
-        "Search for library:",
+    if OPENAI_KEY:
+        placeholder = "Configured"
+    elif not OPENAI_KEY:
+        placeholder = " "
+    user_openai_key = st.text_input(
+        "Enter OpenAI API Key", 
+        type="password", 
+        key="user_openai_key",
+        placeholder=placeholder
+    )
+    
+    library_name = st.selectbox(
+        "Select a library",
         options=LIBRARY_LIST,
-        index=LIBRARY_LIST.index(st.session_state.selected_library),
+        index=LIBRARY_LIST.index(st.session_state.library_name),
         key="library_selector"
     )
-    if selected_library != st.session_state.selected_library:
-        st.session_state.selected_library = selected_library
+    if library_name != st.session_state.library_name:
+        st.session_state.library_name = library_name
         st.session_state.history = []  # Clear chat history when library changes
         st.rerun()  # Refresh
 
     st.markdown('<div style="height: 15px;"></div>', unsafe_allow_html=True)
     
-    use_rag = st.toggle("Use RAG", value=True, key="rag_toggle")
+    st.session_state.use_rag = st.toggle("Use RAG", value=True, key="rag_toggle")
 
+    if st.button("Run Sleepy Function"):
+        placeholder = st.empty()  # This will hold the log
+        log_lines = []
+
+        f = io.StringIO()
+        # Redirect prints from the function to our StringIO
+        with redirect_stdout(f):
+            sleepy()
+
+            # You can flush frequently in your function to make it more "streaming"
+            # e.g., add sys.stdout.flush() after prints in sleepy()
+
+        # Stream line by line
+        for line in f.getvalue().splitlines():
+            log_lines.append(line)
+            placeholder.text("\n".join(log_lines))
+            
 # Chat messages
 for message in st.session_state.history:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
 # Chat input
-if prompt := st.chat_input(
-    placeholder=f"Ask about {st.session_state.selected_library.capitalize()}...",
-    accept_file=False
-    ):
+if prompt := st.chat_input(placeholder=f"Ask about {st.session_state.library_name.capitalize()}...", accept_file=False):
     
+    with st.chat_message("user"):
+        st.text(prompt)
+        
     # Deliver prompt based on RAG toggle
-    if use_rag:
-        model_prompt = prompt_with_rag(prompt, st.session_state.selected_library)
+    if st.session_state.use_rag:
+        # Expand prompt for improved RAG
+        expanded_prompt = prompt_expansion(prompt, st.session_state.library_name)
+        print(expanded_prompt)
+        model_prompt, metadata_list = prompt_with_rag(expanded_prompt, st.session_state.library_name)
     else:
         model_prompt = prompt_without_rag(prompt)
-
+        metadata_list = []
+    
     st.session_state.history.append({"role": "user", "content": prompt})
-
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
+        
     with st.chat_message("assistant"):
+        
         convo_for_model = st.session_state.history.copy()
         convo_for_model[-1] = {"role": "user", "content": model_prompt}
 
@@ -147,7 +242,12 @@ if prompt := st.chat_input(
             for part in stream
             if part.choices[0].delta.content is not None
         )
-
+        
+        if metadata_list:
+            with st.expander("Sources"):
+                links = [m["url"] for m in metadata_list if "url" in m]
+                st.markdown("\n".join(f"- {link}" for link in links))
+            
     print(response)
     
     st.session_state.history.append({"role": "assistant", "content": response})
