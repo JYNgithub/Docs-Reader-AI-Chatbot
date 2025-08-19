@@ -1,0 +1,30 @@
+chroma:
+  base_url:
+    - "https://docs.trychroma.com/integrations"
+    - "https://docs.trychroma.com/docs"
+  exclude_url:
+    - "https://docs.trychroma.com/docs/overview/contributing"
+    - "https://docs.trychroma.com/docs/overview/telemetry"
+    - "https://docs.trychroma.com/docs/cli/sample-apps"
+  tag_to_scrape: "article"
+
+pillow:
+  base_url:
+    - "https://pillow.readthedocs.io/en/stable/installation"
+  exclude_url: []
+  tag_to_scrape: ".article-container"
+
+pyspark:
+  base_url:
+    - "https://spark.apache.org/docs/latest/api/python/getting_started/"
+    - "https://spark.apache.org/docs/latest/api/python/tutorial/"
+    - "https://spark.apache.org/docs/latest/api/python/user_guide/"
+    # - "https://spark.apache.org/docs/latest/api/python/reference/"
+  exclude_url: []
+  tag_to_scrape: "article.bd-article"
+
+langgraph:
+  base_url:
+  - "https://langchain-ai.github.io/langgraph/"
+  exclude_url: []
+  tag_to_scrape: "div.md-content[data-md-component='content']"

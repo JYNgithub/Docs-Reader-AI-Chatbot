@@ -18,7 +18,7 @@ def setup_collection(CLIENT, LIBRARY_NAME):
 
     if any(c.name == f"{LIBRARY_NAME}_docs" for c in collections):
         # Note: deleting before creating is risky behaviour, fix later
-        logging.info("Replacing existing collection...")
+        logging.info(f"Replacing existing '{LIBRARY_NAME}_docs' collection...")
         CLIENT.delete_collection(name=f"{LIBRARY_NAME}_docs")
         time.sleep(3)
         CLIENT.create_collection(
@@ -38,7 +38,7 @@ def setup_collection(CLIENT, LIBRARY_NAME):
             }  
         )
 
-def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL = None):
+def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL = None, max_links=None):
     
     if EXCLUDE_URL is None:
         EXCLUDE_URL = []
@@ -69,13 +69,17 @@ def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL = None):
             new_links = [link for link in child_links if link not in all_links]
             all_links.update(new_links)
             to_crawl.extend(new_links)
+        
+            if max_links is not None and len(all_links) >= max_links:
+                logging.info(f"Reached max_links={max_links}, stopping crawl.")
+                break
 
         browser.close()
 
     filtered_links = [link for link in all_links if link not in EXCLUDE_URL]
     df = pd.DataFrame(filtered_links, columns=["Links"])
     df["Scraped"] = False
-    df.to_csv(f"./utils/{LIBRARY_NAME}_links.csv", index=False)
+    df.to_csv(f"./logging/{LIBRARY_NAME}_links.csv", index=False)
     logging.info(f"Total unique links saved: {len(filtered_links)}")
     
     return filtered_links
@@ -83,6 +87,8 @@ def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL = None):
 def scrape_page(urls, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME):
     
     collection = CLIENT.get_collection(name=f"{LIBRARY_NAME}_docs")
+    total_count = len(urls)
+    scraped_count = 0
     
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -111,19 +117,21 @@ def scrape_page(urls, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME):
                     documents=[content],
                     metadatas=[{"url": url}]
                 )
-                logging.info(f"Added page content from {url} with ID {uid}")
+                logging.info(f"Added page content from {url}")
                 time.sleep(1)
                 
-                df = pd.read_csv(f"./utils/{LIBRARY_NAME}_links.csv")
+                df = pd.read_csv(f"./logging/{LIBRARY_NAME}_links.csv")
                 if url in df['Links'].values:
                     df.loc[df['Links'] == url, 'Scraped'] = True
-                    df.to_csv(f"./utils/{LIBRARY_NAME}_links.csv", index=False)
+                    df.to_csv(f"./logging/{LIBRARY_NAME}_links.csv", index=False)
                 
             except:
-                logging.warning(f"Scraping failed for {url}")
+                logging.warning(f"Failed to add content from {url}")
 
             finally:
                 page.close()
+                scraped_count += 1
+                logging.info(f"Done with {scraped_count}/{total_count} links...")
         
         browser.close()
 

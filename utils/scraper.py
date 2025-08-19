@@ -1,3 +1,4 @@
+import yaml
 import logging
 import chromadb
 from components import setup_collection, fetch_links, scrape_page
@@ -6,21 +7,16 @@ from components import setup_collection, fetch_links, scrape_page
 # Configuration
 ########################################################
 
-# Configure links to scrape
-BASE_URL = [
-    "https://docs.trychroma.com/integrations",
-    "https://docs.trychroma.com/docs",
-]
-
-EXCLUDE_URL = [
-    "https://docs.trychroma.com/docs/overview/contributing",
-    "https://docs.trychroma.com/docs/overview/telemetry",
-    "https://docs.trychroma.com/docs/cli/sample-apps"
-]
+# Configure library name
+LIBRARY_NAME = "langgraph"
 
 # Configure basic information
-LIBRARY_NAME = "chroma"
-TAG_TO_SCRAPE = "article"
+with open("./utils/libraries.yaml") as f:
+    data = yaml.safe_load(f)
+conf = data[LIBRARY_NAME]
+BASE_URL = conf["base_url"]
+EXCLUDE_URL = conf["exclude_url"]
+TAG_TO_SCRAPE = conf["tag_to_scrape"]
 
 # Configure ChromaDB client
 CLIENT = chromadb.PersistentClient(path="./vectors")
@@ -36,9 +32,10 @@ def main():
     
     setup_collection(CLIENT, LIBRARY_NAME)
     
-    all_links = fetch_links(BASE_URL, LIBRARY_NAME)
+    all_links = fetch_links(BASE_URL, LIBRARY_NAME, max_links=2)
     
     scrape_page(all_links, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME)
 
 if __name__ == '__main__':
     main()
+
