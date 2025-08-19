@@ -4,13 +4,6 @@ import streamlit as st
 import yaml
 from openai import OpenAI
 from dotenv import load_dotenv
-import subprocess
-import streamlit as st
-import io
-import sys
-from contextlib import redirect_stdout
-from etc.sleep import sleepy
-from etc.sleep import sleepy
     
 ######################################################
 # Configuration
@@ -19,7 +12,7 @@ from etc.sleep import sleepy
 # Configure list of libraries
 with open("./utils/libraries.yaml", "r") as f:
     data = yaml.safe_load(f)
-LIBRARY_LIST = list(data.keys())
+LIBRARY_LIST = sorted(list(data.keys()))
 
 # Configure ChromaDB client
 if "client" not in st.session_state:
@@ -36,30 +29,6 @@ if "library_name" not in st.session_state:
 ######################################################
 # Utility Functions
 ###################################################### 
-
-def run_scraper():
-    script_path = os.path.join(".", "etc", "sleep.py")
-
-    st.session_state.scraper_running = True
-    placeholder = st.empty()  # for streaming output
-    full_text = ""
-
-    process = subprocess.Popen(
-        ["python", script_path],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        bufsize=1,
-        universal_newlines=True
-    )
-
-    for line in process.stdout:
-        full_text += line
-        placeholder.text(full_text)  # update in real time
-
-    process.stdout.close()
-    process.wait()
-    st.session_state.scraper_running = False
 
 def prompt_expansion(query, library_name):
     
@@ -97,7 +66,7 @@ def prompt_with_rag(query, library_name):
 
     prompt = (
         f"As a beginner-friendly coding assistant, use the following context to answer the question concisely and shortly. Provide short, simple and easy to understand code. Prevent using custom functions. "
-        f"For every code chunk, wrap it in triple backticks and specify the language after the opening backticks.\n\n"
+        f"For any code chunk, wrap it in triple backticks and specify the language after the opening backticks. For plain text, the triple backticks are not needed. \n\n"
         f"Context:\n{context}\n\n"
         f"Question: {query}\nAnswer:"
     )
@@ -110,14 +79,14 @@ def prompt_without_rag(query):
     
     prompt = (
         f"As a beginner-friendly coding assistant, answer the question concisely and shortly. Provide short, simple and easy to understand code. Prevent using custom functions. " 
-        f"For every code chunk, wrap it in triple backticks and specify the language after the opening backticks.\n\n"
+        f"For any code chunk, wrap it in triple backticks and specify the language after the opening backticks. For plain text, the triple backticks are not needed. \n\n"
         f"Question: {query}\nAnswer:"
     )
     
     print("---------------------------------------------------------")
     # print(prompt)
     return prompt 
-        
+
 ######################################################
 # App Layout
 ###################################################### 
@@ -187,27 +156,12 @@ with st.sidebar:
     
     st.session_state.use_rag = st.toggle("Use RAG", value=True, key="rag_toggle")
 
-    if st.button("Run Sleepy Function"):
-        placeholder = st.empty()  # This will hold the log
-        log_lines = []
-
-        f = io.StringIO()
-        # Redirect prints from the function to our StringIO
-        with redirect_stdout(f):
-            sleepy()
-
-            # You can flush frequently in your function to make it more "streaming"
-            # e.g., add sys.stdout.flush() after prints in sleepy()
-
-        # Stream line by line
-        for line in f.getvalue().splitlines():
-            log_lines.append(line)
-            placeholder.text("\n".join(log_lines))
-            
 # Chat messages
 for message in st.session_state.history:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+        
+# print(st.session_state.history)
 
 # Chat input
 if prompt := st.chat_input(placeholder=f"Ask about {st.session_state.library_name.capitalize()}...", accept_file=False):
@@ -219,7 +173,7 @@ if prompt := st.chat_input(placeholder=f"Ask about {st.session_state.library_nam
     if st.session_state.use_rag:
         # Expand prompt for improved RAG
         expanded_prompt = prompt_expansion(prompt, st.session_state.library_name)
-        print(expanded_prompt)
+        # print(expanded_prompt)
         model_prompt, metadata_list = prompt_with_rag(expanded_prompt, st.session_state.library_name)
     else:
         model_prompt = prompt_without_rag(prompt)
@@ -229,12 +183,19 @@ if prompt := st.chat_input(placeholder=f"Ask about {st.session_state.library_nam
         
     with st.chat_message("assistant"):
         
-        convo_for_model = st.session_state.history.copy()
-        convo_for_model[-1] = {"role": "user", "content": model_prompt}
+        final_prompt = st.session_state.history.copy()
+        final_prompt[-1] = {"role": "user", "content": model_prompt}
+        
+        # The final prompt sent should contain
+        # 1. chat history without context
+        # 2. instructions + overall directions
+        # 3. user prompt (currently the expanded version, may change later, depends)
+        # print(final_prompt)
+        print(st.session_state.history)
 
         stream = OPENAI_CLIENT.chat.completions.create(
             model=st.session_state["openai_model"],
-            messages=convo_for_model,
+            messages=final_prompt,
             stream=True,
         )
         response = st.write_stream(
@@ -248,6 +209,11 @@ if prompt := st.chat_input(placeholder=f"Ask about {st.session_state.library_nam
                 links = [m["url"] for m in metadata_list if "url" in m]
                 st.markdown("\n".join(f"- {link}" for link in links))
             
-    print(response)
+    # print(response)
     
     st.session_state.history.append({"role": "assistant", "content": response})
+    
+    # Limit chat history memory to only 15 dialogues 
+    # Since chose to not also add after appending "user", 
+    # it might reach 16 dialogues temporarily, with the last message being from "user" before it gets filtered here.
+    st.session_state.history = st.session_state.history[-15:]
