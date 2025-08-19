@@ -7,6 +7,8 @@ Can it give you accurate syntax and information based on official documentation?
 
 Note: As this remains a hobby project, it will inevitably be limited in terms of scalability and total libraries it can scrape.
 
+TODO: Expand libraries
+
 TODO: Add pruning after every scrape?
 
 TODO: Make a function that can scrape through sitemaps
