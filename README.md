@@ -7,15 +7,13 @@ Can it give you accurate syntax and information based on official documentation?
 
 Note: As this remains a hobby project, it will inevitably be limited in terms of scalability and total libraries it can scrape.
 
-TODO: Expand libraries
-
-TODO: Add pruning after every scrape?
-
-TODO: Make a function that can scrape through sitemaps
+TODO: Some sort of script for db management
 
 TODO: Dockerize (later priority) / Deploy?
 
 Refer https://github.com/iryna-savchuk/IR-and-RAG-with-Chroma
+
+Note: Interrupting scraper.py will cause the pruning bug
 
 
 

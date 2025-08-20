@@ -1,5 +1,9 @@
 # Changelog
 
+## [2025-08-20]
+1) Added function to scrape through sitemaps
+2) Improved logic of components
+
 ## [2025-08-19]
 1) Query expansion for improved RAG
 2) Reworked scrapers logic, introduced libraries.yaml and scraper.py

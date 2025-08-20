@@ -11,7 +11,8 @@ chroma:
 pillow:
   base_url:
     - "https://pillow.readthedocs.io/en/stable/installation"
-  exclude_url: []
+    - "https://pillow.readthedocs.io/en/stable/handbook"
+    - "https://pillow.readthedocs.io/en/stable/reference"
   tag_to_scrape: ".article-container"
 
 pyspark:
@@ -20,11 +21,105 @@ pyspark:
     - "https://spark.apache.org/docs/latest/api/python/tutorial/"
     - "https://spark.apache.org/docs/latest/api/python/user_guide/"
     # - "https://spark.apache.org/docs/latest/api/python/reference/"
-  exclude_url: []
   tag_to_scrape: "article.bd-article"
 
 langgraph:
   base_url:
   - "https://langchain-ai.github.io/langgraph/"
-  exclude_url: []
+  exclude_url:
+  - "https://langchain-ai.github.io/langgraph/reference/"
+  - "https://langchain-ai.github.io/langgraph/agents/prebuilt/"
+  - "https://langchain-ai.github.io/langgraph/adopters/"
+  - "https://langchain-ai.github.io/langgraph/llms-txt-overview/"
+  - "https://langchain-ai.github.io/langgraph/llms-full.txt"
+  - "https://langchain-ai.github.io/langgraph/llms.txt"
   tag_to_scrape: "div.md-content[data-md-component='content']"
+
+langchain:
+  base_url:
+  - "https://python.langchain.com/docs/tutorials/"
+  - "https://python.langchain.com/docs/how_to/"
+  - "https://python.langchain.com/docs/concepts/"
+  - "https://python.langchain.com/docs/integrations/components/"
+  tag_to_scrape: "div.theme-doc-markdown.markdown"
+
+# openai:
+#   root_url: "https://platform.openai.com/"
+#   base_url:
+#   - "https://platform.openai.com/docs/overview"
+#   - "https://platform.openai.com/docs/quickstart"
+#   - "https://platform.openai.com/docs/models"
+#   - "https://platform.openai.com/docs/pricing"
+#   - "https://platform.openai.com/docs/libraries"
+#   - "https://platform.openai.com/docs/guides"
+#   exclude_url: []
+#   tag_to_scrape: ".docs-scroll-container"
+
+transformers:
+  base_url:
+  - "https://huggingface.co/docs/transformers/"
+  exclude_url:
+  - "https://huggingface.co/docs/transformers/en/model_doc"
+  - "https://huggingface.co/docs/transformers/en/main_classes"
+  - "https://huggingface.co/docs/transformers/en/internal"
+  - "https://huggingface.co/docs/transformers/en/reference"
+  - "https://huggingface.co/docs/transformers/en/model_doc"
+  - "https://huggingface.co/docs/transformers/en/main_classes"
+  - "https://huggingface.co/docs/transformers/en/internal"
+  - "https://huggingface.co/docs/transformers/en/reference"
+  - "https://huggingface.co/docs/transformers/v4.53.3/en/model_doc"
+  - "https://huggingface.co/docs/transformers/v4.53.3/en/main_classes"
+  - "https://huggingface.co/docs/transformers/v4.53.3/en/internal"
+  - "https://huggingface.co/docs/transformers/v4.53.3/en/reference"
+  tag_to_scrape: "div.prose-doc.prose.relative.mx-auto.max-w-4xl.break-words"
+
+tokenizers:
+  base_url:
+  - "https://huggingface.co/docs/tokenizers/"
+  tag_to_scrape: "div.prose-doc.prose.relative.mx-auto.max-w-4xl.break-words"
+
+gradio:
+  base_url:
+  - "https://www.gradio.app/guides/"
+  tag_to_scrape: "div.prose.text-lg.max-w-full"
+
+fastapi:
+  base_url:
+  - "https://fastapi.tiangolo.com/python-types/"
+  - "https://fastapi.tiangolo.com/async/"
+  - "https://fastapi.tiangolo.com/environment-variables/"
+  - "https://fastapi.tiangolo.com/virtual-environments/"
+  - "https://fastapi.tiangolo.com/tutorial/"
+  - "https://fastapi.tiangolo.com/advanced/"
+  - "https://fastapi.tiangolo.com/fastapi-cli/"
+  - "https://fastapi.tiangolo.com/deployment/"
+  - "https://fastapi.tiangolo.com/how-to/"
+  tag_to_scrape: "div.md-content[data-md-component='content']"
+
+psycopg2:
+  base_url:
+  - "https://www.psycopg.org/docs"
+  exclude_url:
+  - "https://www.psycopg.org/docs/news.html"
+  - "https://www.psycopg.org/docs/license.html"
+  - "https://www.psycopg.org/docs/genindex.html"
+  - "https://www.psycopg.org/docs/py-modindex.html"
+  - "https://www.psycopg.org/docs/search.html"
+  tag_to_scrape: "div.body[role='main']"
+
+redis:
+  base_url:
+  - "https://redis.io/docs/latest/develop/clients/redis-py/"
+  tag_to_scrape: "section.prose.w-full.py-12.max-w-none"
+
+psycopg3:
+
+sqlalchemy:
+
+databricks-sdk:
+
+
+
+
+  
+
