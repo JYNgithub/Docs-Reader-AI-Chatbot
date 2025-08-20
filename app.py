@@ -53,7 +53,7 @@ def prompt_with_rag(query, library_name):
     result = collection.query(
         query_texts=[query],
         include=["documents","metadatas"],
-        n_results = 5
+        n_results = 4
     )
     
     docs = result.get("documents", [])
