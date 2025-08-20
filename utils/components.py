@@ -1,13 +1,13 @@
 import re
-import sys
 import time
 import uuid
 import logging
+import asyncio
+import requests
 import pandas as pd
 from datetime import datetime
 from urllib.parse import urldefrag
-from playwright.sync_api import sync_playwright
-import asyncio
+import xml.etree.ElementTree as ET
 from playwright.async_api import async_playwright
 
 ########################################################
@@ -41,17 +41,23 @@ def setup_collection(CLIENT, LIBRARY_NAME):
         )
 
 async def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL=None, max_links=None):
+    
     if EXCLUDE_URL is None:
         EXCLUDE_URL = []
 
-    all_links = set(BASE_URL)
-    to_crawl = list(BASE_URL)
+    all_links = set()
+    to_crawl = []
+
+    # Initialize with defragmented BASE_URL
+    for url in BASE_URL:
+        url_no_frag = urldefrag(url).url
+        all_links.add(url_no_frag)
+        to_crawl.append(url_no_frag)
 
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         context = await browser.new_context()
 
-        # Limit number of concurrent pages
         concurrency = 5
         semaphore = asyncio.Semaphore(concurrency)
 
@@ -61,18 +67,15 @@ async def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL=None, max_links=None):
                 try:
                     logging.info(f"Crawling: {url}")
                     await page.goto(url)
-                    links = await page.eval_on_selector_all(
-                        'a', 'els => els.map(e => e.href)'
-                    )
-                    child_links = [
-                        urldefrag(link).url
-                        for link in links
-                        if any(link.startswith(base) for base in BASE_URL)
-                        and link not in EXCLUDE_URL
-                    ]
-                    new_links = [link for link in child_links if link not in all_links]
-                    all_links.update(new_links)
-                    to_crawl.extend(new_links)
+                    links = await page.eval_on_selector_all('a', 'els => els.map(e => e.href)')
+
+                    for link in links:
+                        if any(link.startswith(base) for base in BASE_URL) and link not in EXCLUDE_URL:
+                            url_no_frag = urldefrag(link).url  # remove fragment
+                            if url_no_frag not in all_links:
+                                all_links.add(url_no_frag)
+                                to_crawl.append(url_no_frag)   # only defragmented URL added
+
                 except Exception as e:
                     logging.warning(f"Failed to load {url}: {e}")
                 finally:
@@ -88,15 +91,54 @@ async def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL=None, max_links=None):
 
         await browser.close()
 
-    filtered_links = [link for link in all_links if link not in EXCLUDE_URL]
+    filtered_links = [
+        link for link in all_links 
+        if not any(link.startswith(prefix) for prefix in EXCLUDE_URL)
+    ]
     df = pd.DataFrame(filtered_links, columns=["Links"])
     df["Scraped"] = False
     df.to_csv(f"./logging/{LIBRARY_NAME}_links.csv", index=False)
     logging.info(f"Total unique links saved: {len(filtered_links)}")
     
-    return list(all_links)
+    return list(filtered_links)
 
-async def scrape_page(urls, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME):
+def fetch_sitemap(ROOT_URL, BASE_URL, LIBRARY_NAME,  EXCLUDE_URL=None):
+    def _parse_sitemap(url):
+        resp = requests.get(url, timeout=10)
+        resp.raise_for_status()
+        root = ET.fromstring(resp.content)
+        namespace = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+        # Collect URLs
+        urls = [loc.text for loc in root.findall(".//sm:loc", namespace)]
+        return urls
+
+    # Start with the root sitemap
+    sitemap_url = ROOT_URL.rstrip("/") + "/sitemap.xml"
+    urls = _parse_sitemap(sitemap_url)
+    all_links = []
+
+    # If it's a sitemap index → fetch each sub-sitemap
+    if all(u.endswith(".xml") for u in urls):
+        for sm in urls:
+            all_links.extend(_parse_sitemap(sm))
+    else:
+        all_links.extend(urls)
+
+    # Filter by BASE_URL
+    filtered = [u for u in all_links if any(u.startswith(base) for base in BASE_URL)]
+    # Exclude by EXCLUDE_URL
+    if EXCLUDE_URL is None:
+        EXCLUDE_URL = []
+    filtered_links = [u for u in filtered if not any(u.startswith(prefix) for prefix in EXCLUDE_URL)]
+
+    df = pd.DataFrame(filtered_links, columns=["Links"])
+    df["Scraped"] = False
+    df.to_csv(f"./logging/{LIBRARY_NAME}_links.csv", index=False)
+    logging.info(f"Total unique links saved: {len(filtered_links)}")
+
+    return sorted(set(filtered_links))
+
+async def scrape_page(urls, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME, timeout = 20000):
     collection = CLIENT.get_collection(name=f"{LIBRARY_NAME}_docs")
     total_count = len(urls)
     scraped_count = 0
@@ -119,7 +161,7 @@ async def scrape_page(urls, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME):
                     await page.goto(url, wait_until="domcontentloaded")
                     
                     logging.info("Scraping data...")
-                    await page.wait_for_selector(TAG_TO_SCRAPE)
+                    await page.wait_for_selector(TAG_TO_SCRAPE, timeout=timeout)
                     element = await page.query_selector(TAG_TO_SCRAPE)
                     if not element:
                         raise ValueError(f"No element found for selector: {TAG_TO_SCRAPE}")

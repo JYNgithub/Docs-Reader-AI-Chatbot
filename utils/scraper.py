@@ -2,22 +2,23 @@ import yaml
 import logging
 import chromadb
 import asyncio
-from components import setup_collection, fetch_links, scrape_page
+from components import setup_collection, fetch_links, fetch_sitemap, scrape_page
 
 ########################################################
 # Configuration
 ########################################################
 
 # Configure library name
-LIBRARY_NAME = "chroma"
+LIBRARY_NAME = "transformers"
 
 # Configure basic information
 with open("./utils/libraries.yaml") as f:
     data = yaml.safe_load(f)
-conf = data[LIBRARY_NAME]
-BASE_URL = conf["base_url"]
-EXCLUDE_URL = conf["exclude_url"]
-TAG_TO_SCRAPE = conf["tag_to_scrape"]
+library = data[LIBRARY_NAME]
+ROOT_URL = library.get("root_url", [])
+BASE_URL = library["base_url"]
+EXCLUDE_URL = library.get("exclude_url", [])
+TAG_TO_SCRAPE = library["tag_to_scrape"]
 
 # Configure ChromaDB client
 CLIENT = chromadb.PersistentClient(path="./vectors")
@@ -29,14 +30,35 @@ logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
 # Main Execution
 ########################################################
 
-def main():
-    
-    setup_collection(CLIENT, LIBRARY_NAME)
+async def main():
+    setup_collection(
+        CLIENT,
+        LIBRARY_NAME
+    )
 
-    all_links = asyncio.run(fetch_links(BASE_URL, LIBRARY_NAME))
+    if not ROOT_URL:
+        all_links = await fetch_links(
+            BASE_URL,
+            LIBRARY_NAME,
+            EXCLUDE_URL,
+            max_links=None
+        )
+    else:
+        all_links = fetch_sitemap(
+            ROOT_URL,
+            BASE_URL,
+            LIBRARY_NAME,
+            EXCLUDE_URL
+        )
 
-    asyncio.run(scrape_page(all_links, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME))
+    await scrape_page(
+        all_links,
+        CLIENT,
+        TAG_TO_SCRAPE,
+        LIBRARY_NAME,
+        timeout=45000
+    )
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    asyncio.run(main())
 
