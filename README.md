@@ -1,19 +1,23 @@
-This project is still under development.
+# DocsReader
 
-No, this is not the 1000th PDF and document chatbot.  
-This is a chatbot specifically for documentations of selected Python libraries.  
-Can it build your whole project with one prompt? No  
-Can it give you accurate syntax and information based on official documentation? Yes  
+Not the 1000th PDF or document chatbot.  
+**DocsReader** is a chatbot designed to be your learning partner for selected Python libraries, using official documentation as its source.  
 
-Note: As this remains a hobby project, it will inevitably be limited in terms of scalability and total libraries it can scrape.
+- Can it build your whole project with one prompt? **No**  
+- Can it help you learn new tools with accurate syntax and information? **Yes**  
 
-TODO: Some sort of script for db management
+---
 
-TODO: Dockerize (later priority) / Deploy?
+## Limitations
 
-Refer https://github.com/iryna-savchuk/IR-and-RAG-with-Chroma
+As this is a hobby project, it has some limitations:
+- Limited number of libraries supported
+- Limited scalability
 
-Note: Interrupting scraper.py will cause the pruning bug
+---
 
+## TODO
 
-
+- [ ] Implement a script for database management  
+- [ ] Dockerize and deploy (later priority)  
+- [ ] Fix pruning bug when interrupting `scraper.py`  

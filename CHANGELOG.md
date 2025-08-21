@@ -1,5 +1,9 @@
 # Changelog
 
+## [2025-08-21]
+1) Added logic to remove query links 
+2) Finalized interface and theme
+
 ## [2025-08-20]
 1) Added function to scrape through sitemaps
 2) Improved logic of components
@@ -17,3 +21,6 @@
 ## [2025-08-18]
 1) Fixed _get_collection, removed and replaced with improved logic
 2) Basic layout done
+
+## [Start of Project (1 week)]
+1) Done basic structure of workflow
