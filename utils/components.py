@@ -6,7 +6,7 @@ import asyncio
 import requests
 import pandas as pd
 from datetime import datetime
-from urllib.parse import urldefrag
+from urllib.parse import urldefrag, urlparse, parse_qs
 import xml.etree.ElementTree as ET
 from playwright.async_api import async_playwright
 
@@ -48,9 +48,11 @@ async def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL=None, max_links=None):
     all_links = set()
     to_crawl = []
 
-    # Initialize with defragmented BASE_URL
+    # Initialize with defragmented + no query BASE_URL
     for url in BASE_URL:
         url_no_frag = urldefrag(url).url
+        if urlparse(url_no_frag).query: 
+            continue
         all_links.add(url_no_frag)
         to_crawl.append(url_no_frag)
 
@@ -69,9 +71,12 @@ async def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL=None, max_links=None):
                     await page.goto(url)
                     links = await page.eval_on_selector_all('a', 'els => els.map(e => e.href)')
 
+                    # Ensure defragmented + no query links only
                     for link in links:
                         if any(link.startswith(base) for base in BASE_URL) and link not in EXCLUDE_URL:
-                            url_no_frag = urldefrag(link).url  # remove fragment
+                            url_no_frag = urldefrag(link).url
+                            if urlparse(url_no_frag).query:  # skip query links
+                                continue
                             if url_no_frag not in all_links:
                                 all_links.add(url_no_frag)
                                 to_crawl.append(url_no_frag)   # only defragmented URL added
