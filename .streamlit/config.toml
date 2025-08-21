@@ -1,0 +1,129 @@
+[theme]
+# Base theme - using dark theme as foundation
+base = "dark"
+
+# Primary accent color - subtle purple for highlights and active elements
+primaryColor = "#8B5CF6"
+
+# Main background - dark grey for clean, modern look
+backgroundColor = "#2D2D2D"
+
+# Secondary background - slightly lighter grey for widgets and panels
+secondaryBackgroundColor = "#3A3A3A"
+
+# Text color - clean white for maximum readability
+textColor = "#FFFFFF"
+
+# Link color - brighter purple for visibility
+linkColor = "#A855F7"
+
+# Clean links without underlines for modern aesthetic
+linkUnderline = false
+
+# Code background - darker grey to distinguish from main background
+codeBackgroundColor = "#1E1E1E"
+
+# Font - clean sans-serif for modern look
+font = "sans-serif"
+
+# Slightly larger base font for better readability
+baseFontSize = 17
+
+# Medium font weight for clean, readable text
+baseFontWeight = 400
+
+# Heading font - same as body for consistency
+headingFont = "sans-serif"
+
+# Code font - monospace for proper code display
+codeFont = "monospace"
+
+# Clean rounded corners for modern aesthetic
+baseRadius = "0.5rem"
+
+# Matching button radius
+buttonRadius = "0.5rem"
+
+# Purple borders as requested
+borderColor = "#2D2D2D"
+
+# Consistent dataframe borders
+dataframeBorderColor = "#8B5CF6"
+
+# Clean dataframe header with subtle contrast
+dataframeHeaderBackgroundColor = "#404040"
+
+# Show widget borders for definition with purple color
+showWidgetBorder = true
+
+# Custom categorical chart colors - purple and grey palette
+chartCategoricalColors = [
+    "#8B5CF6",  # Primary purple
+    "#A855F7",  # Bright purple
+    "#7C3AED",  # Deep purple
+    "#C4B5FD",  # Light purple
+    "#6B7280",  # Medium grey
+    "#9CA3AF",  # Light grey
+    "#4B5563",  # Dark grey
+    "#E5E7EB",  # Very light grey
+    "#6366F1",  # Indigo accent
+    "#8B5CF6"   # Back to primary
+]
+
+# Sequential colors for gradients - purple to grey scale
+chartSequentialColors = [
+    "#1E1E1E",  # Darkest
+    "#2D2D2D",  # Dark grey
+    "#3A3A3A",  # Medium dark grey
+    "#4B5563",  # Grey
+    "#6B7280",  # Medium grey
+    "#7C3AED",  # Purple transition
+    "#8B5CF6",  # Primary purple
+    "#A855F7",  # Bright purple
+    "#C4B5FD",  # Light purple
+    "#E0E7FF"   # Lightest purple
+]
+
+[theme.sidebar]
+# Sidebar with slightly different background for hierarchy
+backgroundColor = "#252525"
+
+# Consistent secondary background
+secondaryBackgroundColor = "#333333"
+
+# White text for readability
+textColor = "#FFFFFF"
+
+# Purple accent for sidebar links
+linkColor = "#A855F7"
+
+# No underlines for clean look
+linkUnderline = false
+
+# Darker code background in sidebar
+codeBackgroundColor = "#1A1A1A"
+
+# Consistent purple borders
+borderColor = "#252525"
+
+# Clean rounded corners
+baseRadius = "0.5rem"
+buttonRadius = "0.5rem"
+
+# Show borders for definition
+showWidgetBorder = true
+
+[client]
+# Clean error handling - show minimal errors for better UX
+showErrorDetails = "type"
+
+# Auto toolbar mode for clean interface
+toolbarMode = "auto"
+
+[server]
+# Disable email prompt for cleaner startup
+showEmailPrompt = false
+
+# Faster reruns for responsive interface
+[runner]
+fastReruns = true

@@ -35,7 +35,7 @@ def prompt_expansion(query, library_name):
     response = OPENAI_CLIENT.chat.completions.create(
         model=st.session_state["openai_model"],
         messages=[
-            {"role": "system", "content": f"You are a knowledgeable developer in a Python library/tool called {library_name}. Answer in 3 short and concise sentences without any code."},
+            {"role": "system", "content": f"You are a knowledgeable developer in a Python library/tool called {library_name}. First, paraphrase the user query twice, then followed by answering in 2 short and concise sentences without any code."},
             {"role": "user", "content": query}
         ],
     )
@@ -48,7 +48,11 @@ def prompt_expansion(query, library_name):
          
 def prompt_with_rag(query, library_name):
     
-    collection = st.session_state.client.get_collection(name=f"{library_name}_docs")
+    try:
+        collection = st.session_state.client.get_collection(name=f"{library_name}_docs")
+    except Exception:
+        st.error(f"No data on {library_name}.")
+        st.stop()
     
     result = collection.query(
         query_texts=[query],
@@ -65,7 +69,7 @@ def prompt_with_rag(query, library_name):
     metadata_list = metas[0] if metas else []
 
     prompt = (
-        f"As a beginner-friendly coding assistant, use the following context to answer the question concisely and shortly. Provide short, simple and easy to understand code. Prevent using custom functions. "
+        f"As a beginner-friendly coding assistant, use the following context to answer the question concisely and shortly. Provide short, simple and easy to understand Python code. Prevent using custom functions. "
         f"For any code chunk, wrap it in triple backticks and specify the language after the opening backticks. For plain text, the triple backticks are not needed. \n\n"
         f"Context:\n{context}\n\n"
         f"Question: {query}\nAnswer:"
@@ -78,7 +82,7 @@ def prompt_with_rag(query, library_name):
 def prompt_without_rag(query):
     
     prompt = (
-        f"As a beginner-friendly coding assistant, answer the question concisely and shortly. Provide short, simple and easy to understand code. Prevent using custom functions. " 
+        f"As a beginner-friendly coding assistant, answer the question concisely and shortly. Provide short, simple and easy to understand Python code. Prevent using custom functions. " 
         f"For any code chunk, wrap it in triple backticks and specify the language after the opening backticks. For plain text, the triple backticks are not needed. \n\n"
         f"Question: {query}\nAnswer:"
     )
@@ -97,43 +101,20 @@ st.set_page_config(
     layout="wide"
 )
 
-# Landing page 
-with st.container():
-    load_dotenv()
-    OPENAI_KEY = os.getenv("OPENAI_KEY")
-    if not OPENAI_KEY and "user_openai_key" in st.session_state:
-        OPENAI_KEY = st.session_state["user_openai_key"]
-    if not OPENAI_KEY:
-        st.title("👋 Welcome to DocsReader")
-        st.markdown("<div style='height:80px'></div>", unsafe_allow_html=True)
-        st.markdown(
-            """
-            <p style='font-size:18px'>
-                To get started, please enter your <b>OpenAI API key</b> in the sidebar (bottom-left corner).
-            </p>
-            <p style='font-size:18px'>
-                If you don’t have one yet, you can create it by logging in at
-                <a href='https://openai.com/api/' target='_blank'>https://openai.com/api/</a>.
-            </p>
-            """,
-            unsafe_allow_html=True
-        )
-        st.stop()
-    OPENAI_CLIENT = OpenAI(api_key=OPENAI_KEY)
-
 # Sidebar
 with st.sidebar:
     
-    st.title("DocsReader")  
+    st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
     
-    st.markdown('<div style="height: calc(100vh - 475px);"></div>', unsafe_allow_html=True)
-
-    st.markdown('---')
+    st.markdown('<h1 style="font-size:38px; margin-bottom:0;">DocsReader</h1>', unsafe_allow_html=True) 
+    st.markdown(
+        '<p style="font-size:16px; color:#A9A9A9;">Your learning partner for <br>Python libraries.</p>',
+        unsafe_allow_html=True
+    )
     
-    if OPENAI_KEY:
-        placeholder = "Configured"
-    elif not OPENAI_KEY:
-        placeholder = " "
+    st.markdown('<div style="height: calc(100vh - 595px);"></div>', unsafe_allow_html=True)
+    
+    placeholder = "Configured" if os.getenv("OPENAI_KEY") else " "
     user_openai_key = st.text_input(
         "Enter OpenAI API Key", 
         type="password", 
@@ -154,8 +135,41 @@ with st.sidebar:
 
     st.markdown('<div style="height: 15px;"></div>', unsafe_allow_html=True)
     
-    st.session_state.use_rag = st.toggle("Use RAG", value=True, key="rag_toggle")
+    st.session_state.use_rag = st.toggle("Toggle RAG", value=True, key="rag_toggle")
+    
+    st.markdown(
+        '<p style="font-size:14px; color:#A9A9A9;">Enable to query new information.<br>Disable to proceed with conversation.</p>',
+        unsafe_allow_html=True
+    )
 
+# Landing page 
+with st.container():
+    load_dotenv()
+    OPENAI_KEY = os.getenv("OPENAI_KEY")
+    if not OPENAI_KEY and "user_openai_key" in st.session_state:
+        OPENAI_KEY = st.session_state["user_openai_key"]
+    if not OPENAI_KEY:
+        st.title("👋 Welcome to DocsReader")
+        st.markdown("<div style='height:80px'></div>", unsafe_allow_html=True)
+        st.markdown(
+            """
+            <p style='font-size:18px'>
+                To get started, please enter your <b>OpenAI API key</b> in the sidebar.
+            </p>
+            <p style='font-size:18px'>
+                If you don’t have one yet, you can create it by logging into the
+                <a href='https://openai.com/api/' target='_blank'>OpenAI API Platform</a>
+            </p>
+            <p style='font-size:18px'>
+                Open-source code at
+                <a href='https://github.com/JYNgithub/Docs-Reader-AI-Chatbot' target='_blank'>GitHub</a>
+            </p>
+            """,
+            unsafe_allow_html=True
+        )
+        st.stop()
+    OPENAI_CLIENT = OpenAI(api_key=OPENAI_KEY)
+    
 # Chat messages
 for message in st.session_state.history:
     with st.chat_message(message["role"]):
@@ -173,7 +187,7 @@ if prompt := st.chat_input(placeholder=f"Ask about {st.session_state.library_nam
     if st.session_state.use_rag:
         # Expand prompt for improved RAG
         expanded_prompt = prompt_expansion(prompt, st.session_state.library_name)
-        # print(expanded_prompt)
+        print(expanded_prompt)
         model_prompt, metadata_list = prompt_with_rag(expanded_prompt, st.session_state.library_name)
     else:
         model_prompt = prompt_without_rag(prompt)
@@ -187,11 +201,11 @@ if prompt := st.chat_input(placeholder=f"Ask about {st.session_state.library_nam
         final_prompt[-1] = {"role": "user", "content": model_prompt}
         
         # The final prompt sent should contain
-        # 1. chat history without context
+        # 1. chat history without context and expansion
         # 2. instructions + overall directions
         # 3. user prompt (currently the expanded version, may change later, depends)
         # print(final_prompt)
-        print(st.session_state.history)
+        # print(st.session_state.history)
 
         stream = OPENAI_CLIENT.chat.completions.create(
             model=st.session_state["openai_model"],
