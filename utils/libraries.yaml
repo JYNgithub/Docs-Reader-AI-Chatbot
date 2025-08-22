@@ -13,7 +13,7 @@ pillow:
     - "https://pillow.readthedocs.io/en/stable/installation"
     - "https://pillow.readthedocs.io/en/stable/handbook"
     - "https://pillow.readthedocs.io/en/stable/reference"
-  tag_to_scrape: ".article-container"
+  tag_to_scrape: "article[role='main']#furo-main-content"
 
 pyspark:
   base_url:
@@ -57,12 +57,70 @@ langchain:
 
 transformers:
   base_url:
-  - "https://huggingface.co/docs/transformers/"
+  - "https://huggingface.co/docs/transformers/en/index"
+  - "https://huggingface.co/docs/transformers/en/installation"
+  - "https://huggingface.co/docs/transformers/en/quicktour"
+  - "https://huggingface.co/docs/transformers/en/models"
+  - "https://huggingface.co/docs/transformers/en/custom_models"
+  - "https://huggingface.co/docs/transformers/en/how_to_hack_models"
+  - "https://huggingface.co/docs/transformers/en/model_sharing"
+  - "https://huggingface.co/docs/transformers/en/add_new_model"
+  - "https://huggingface.co/docs/transformers/en/modular_transformers"
+  - "https://huggingface.co/docs/transformers/en/auto_docstring"
+  - "https://huggingface.co/docs/transformers/en/attention_interface"
+  - "https://huggingface.co/docs/transformers/en/fast_tokenizers"
+  - "https://huggingface.co/docs/transformers/en/image_processors"
+  - "https://huggingface.co/docs/transformers/en/video_processors"
+  - "https://huggingface.co/docs/transformers/en/backbones"
+  - "https://huggingface.co/docs/transformers/en/feature_extractors"
+  - "https://huggingface.co/docs/transformers/en/processors"
+  - "https://huggingface.co/docs/transformers/en/tokenizer_summary"
+  - "https://huggingface.co/docs/transformers/en/pad_truncation"
+  - "https://huggingface.co/docs/transformers/en/pipeline_tutorial"
+  - "https://huggingface.co/docs/transformers/en/pipeline_gradio"
+  - "https://huggingface.co/docs/transformers/en/pipeline_webserver"
+  - "https://huggingface.co/docs/transformers/en/add_new_pipeline"
+  - "https://huggingface.co/docs/transformers/en/llm_tutorial"
+  - "https://huggingface.co/docs/transformers/en/generation_strategies"
+  - "https://huggingface.co/docs/transformers/en/generation_features"
+  - "https://huggingface.co/docs/transformers/en/tasks/prompting"
+  - "https://huggingface.co/docs/transformers/en/llm_optims"
+  - "https://huggingface.co/docs/transformers/en/cache_explanation"
+  - "https://huggingface.co/docs/transformers/en/kv_cache"
+  - "https://huggingface.co/docs/transformers/en/serving"
+  - "https://huggingface.co/docs/transformers/en/llm_tutorial_optimization"
+  - "https://huggingface.co/docs/transformers/en/perplexity"
+  - "https://huggingface.co/docs/transformers/en/conversations"
+  - "https://huggingface.co/docs/transformers/en/chat_templating"
+  - "https://huggingface.co/docs/transformers/en/chat_templating_multimodal"
+  - "https://huggingface.co/docs/transformers/en/chat_templating_writing"
+  - "https://huggingface.co/docs/transformers/en/chat_extras"
+  - "https://huggingface.co/docs/transformers/en/trainer"
+  - "https://huggingface.co/docs/transformers/en/training"
+  - "https://huggingface.co/docs/transformers/en/optimizers"
+  - "https://huggingface.co/docs/transformers/en/hpo_train"
+  - "https://huggingface.co/docs/transformers/en/accelerator_selection"
+  - "https://huggingface.co/docs/transformers/en/accelerate"
+  - "https://huggingface.co/docs/transformers/en/fsdp"
+  - "https://huggingface.co/docs/transformers/en/deepspeed"
+  - "https://huggingface.co/docs/transformers/en/debugging"
+  - "https://huggingface.co/docs/transformers/en/perf_train_cpu_many"
+  - "https://huggingface.co/docs/transformers/en/perf_train_gpu_many"
+  - "https://huggingface.co/docs/transformers/en/peft"
+  - "https://huggingface.co/docs/transformers/en/model_memory_anatomy"
+  - "https://huggingface.co/docs/transformers/en/quantization/"
+  - "https://huggingface.co/docs/transformers/en/serialization"
+  - "https://huggingface.co/docs/transformers/en/tflite"
+  - "https://huggingface.co/docs/transformers/en/executorch"
+  - "https://huggingface.co/docs/transformers/en/torchscript"
+  - "https://huggingface.co/docs/transformers/en/glossary"
+  - "https://huggingface.co/docs/transformers/en/philosophy"
+  - "https://huggingface.co/docs/transformers/en/troubleshooting"
   exclude_url:
-  - "https://huggingface.co/docs/transformers/en/model_doc"
-  - "https://huggingface.co/docs/transformers/en/main_classes"
-  - "https://huggingface.co/docs/transformers/en/internal"
-  - "https://huggingface.co/docs/transformers/en/reference"
+  - "https://huggingface.co/docs/transformers/model_doc"
+  - "https://huggingface.co/docs/transformers/main_classes"
+  - "https://huggingface.co/docs/transformers/internal"
+  - "https://huggingface.co/docs/transformers/reference"
   - "https://huggingface.co/docs/transformers/en/model_doc"
   - "https://huggingface.co/docs/transformers/en/main_classes"
   - "https://huggingface.co/docs/transformers/en/internal"
@@ -113,11 +171,41 @@ redis:
   tag_to_scrape: "section.prose.w-full.py-12.max-w-none"
 
 psycopg3:
+  base_url:
+  - "https://www.psycopg.org/psycopg3/docs/"
+  exclude_url:
+  - "https://www.psycopg.org/psycopg3/docs/news.html"
+  - "https://www.psycopg.org/psycopg3/docs/news_pool.html"
+  tag_to_scrape: "div.article-container"
 
 sqlalchemy:
+  base_url:
+  - "https://docs.sqlalchemy.org/en/20/"
+  exclude_url:
+  - "https://docs.sqlalchemy.org/en/20/dialects/"
+  - "https://docs.sqlalchemy.org/en/20/contents.html/"
+  - "https://docs.sqlalchemy.org/en/20/genindex.html/"
+  - "https://docs.sqlalchemy.org/en/20/_modules/"
+  tag_to_scrape: "section"
 
 databricks-sdk:
+  base_url:
+  - "https://docs.databricks.com/aws/en/getting-started/"
+  - "https://docs.databricks.com/aws/en/lakehouse/"
+  - "https://docs.databricks.com/aws/en/introduction/"
+  - "https://docs.databricks.com/aws/en/lakehouse-architecture/"
+  - "https://docs.databricks.com/aws/en/developers/"
+  exclude_url:
+  - "https://docs.databricks.com/aws/en/reference/"
+  - "https://docs.databricks.com/aws/en/release-notes/"
+  - "https://docs.databricks.com/aws/en/resources/"
+  - "https://docs.databricks.com/aws/en/notebooks/"
+  tag_to_scrape: "div.theme-doc-markdown.markdown"
 
+nicegui:
+  base_url: 
+  - "https://nicegui.io/documentation/"
+  tag_to_scrape: "div.nicegui-column.w-full.p-8"
 
 
 
