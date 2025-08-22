@@ -9,7 +9,7 @@ from components import setup_collection, fetch_links, fetch_sitemap, scrape_page
 ########################################################
 
 # Configure library name
-LIBRARY_NAME = "transformers"
+LIBRARY_NAME = "nicegui" 
 
 # Configure basic information
 with open("./utils/libraries.yaml") as f:
@@ -41,7 +41,9 @@ async def main():
             BASE_URL,
             LIBRARY_NAME,
             EXCLUDE_URL,
-            max_links=None
+            max_links=None,
+            concurrency=5,
+            sleep=1
         )
     else:
         all_links = fetch_sitemap(
@@ -50,13 +52,15 @@ async def main():
             LIBRARY_NAME,
             EXCLUDE_URL
         )
-
+    await asyncio.sleep(10)
     await scrape_page(
         all_links,
         CLIENT,
         TAG_TO_SCRAPE,
         LIBRARY_NAME,
-        timeout=45000
+        timeout=20000,
+        concurrency=3,
+        sleep=3
     )
 
 if __name__ == "__main__":

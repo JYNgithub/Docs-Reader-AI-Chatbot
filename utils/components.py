@@ -40,7 +40,7 @@ def setup_collection(CLIENT, LIBRARY_NAME):
             }  
         )
 
-async def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL=None, max_links=None):
+async def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL=None, max_links=None, concurrency = 5, sleep = 0):
     
     if EXCLUDE_URL is None:
         EXCLUDE_URL = []
@@ -60,7 +60,6 @@ async def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL=None, max_links=None):
         browser = await p.chromium.launch()
         context = await browser.new_context()
 
-        concurrency = 5
         semaphore = asyncio.Semaphore(concurrency)
 
         async def crawl(url):
@@ -69,6 +68,7 @@ async def fetch_links(BASE_URL, LIBRARY_NAME, EXCLUDE_URL=None, max_links=None):
                 try:
                     logging.info(f"Crawling: {url}")
                     await page.goto(url)
+                    await asyncio.sleep(sleep)
                     links = await page.eval_on_selector_all('a', 'els => els.map(e => e.href)')
 
                     # Ensure defragmented + no query links only
@@ -143,7 +143,7 @@ def fetch_sitemap(ROOT_URL, BASE_URL, LIBRARY_NAME,  EXCLUDE_URL=None):
 
     return sorted(set(filtered_links))
 
-async def scrape_page(urls, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME, timeout = 20000):
+async def scrape_page(urls, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME, timeout = 30000, concurrency = 5, sleep = 0):
     collection = CLIENT.get_collection(name=f"{LIBRARY_NAME}_docs")
     total_count = len(urls)
     scraped_count = 0
@@ -151,7 +151,6 @@ async def scrape_page(urls, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME, timeout = 20000
     df = pd.read_csv(f"./logging/{LIBRARY_NAME}_links.csv")
     
     # Limit number of concurrent pages
-    concurrency = 5
     semaphore = asyncio.Semaphore(concurrency)
 
     async with async_playwright() as p:
@@ -163,9 +162,10 @@ async def scrape_page(urls, CLIENT, TAG_TO_SCRAPE, LIBRARY_NAME, timeout = 20000
                 page = await browser.new_page()
                 try:
                     logging.info(f"Loading page: {url}")
-                    await page.goto(url, wait_until="domcontentloaded")
+                    await page.goto(url, wait_until="domcontentloaded", timeout=timeout)
                     
                     logging.info("Scraping data...")
+                    await asyncio.sleep(sleep)
                     await page.wait_for_selector(TAG_TO_SCRAPE, timeout=timeout)
                     element = await page.query_selector(TAG_TO_SCRAPE)
                     if not element:
