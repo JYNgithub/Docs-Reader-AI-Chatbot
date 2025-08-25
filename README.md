@@ -16,6 +16,8 @@ As this is a hobby project, it has some limitations:
 
 ## TODO
 
-- [ ] Implement a script for database management  
+- [x] Implement a script for database management
 - [ ] Dockerize and deploy (later priority)  
-- [ ] Fix pruning bug when interrupting `scraper.py`  
+
+## Note
+Interrupting `scraper.py` can may cause bug where expected and actual collections differ

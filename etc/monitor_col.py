@@ -2,17 +2,14 @@ import chromadb
 
 CLIENT = chromadb.PersistentClient(path="./vectors")
 
-collection = CLIENT.get_collection(
-    name = "nicegui_docs"
-)
+name = input("Enter collection name: ")
+collection = CLIENT.get_collection(name=name)
 
 # Get IDs
 all_docs = collection.get()
-print(all_docs['ids'][:5])
+first_id = all_docs['ids'][0]
 
-# Check content
-results = collection.get(ids=["23d2dc99-0858-43a9-9520-40426a858c21"])
-print(results['documents'])
-print(results['metadatas'])
-
-
+# Print first document and metadata
+results = collection.get(ids=[first_id])
+print(results['documents'][0])
+print(results['metadatas'][0])

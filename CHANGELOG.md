@@ -1,4 +1,6 @@
 # Changelog
+## [2024-08-25]
+1) Added monitor.py to utils for vector db management use
 
 ## [2025-08-21]
 1) Added logic to remove query links 
