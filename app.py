@@ -25,6 +25,9 @@ if "history" not in st.session_state:
     st.session_state.history = []
 if "library_name" not in st.session_state:
     st.session_state.library_name = LIBRARY_LIST[0]  # Default to first option
+
+# Load environment variables (if any)
+load_dotenv()
     
 ######################################################
 # Utility Functions
@@ -144,7 +147,6 @@ with st.sidebar:
 
 # Landing page 
 with st.container():
-    load_dotenv()
     OPENAI_KEY = os.getenv("OPENAI_KEY")
     if not OPENAI_KEY and "user_openai_key" in st.session_state:
         OPENAI_KEY = st.session_state["user_openai_key"]
