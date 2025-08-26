@@ -1,4 +1,10 @@
 # Changelog
+## Note:  
+Interrupting `scraper.py` may cause a bug where expected and actual collections differ
+
+## [2024-08-26]
+1) Dockerized app
+
 ## [2024-08-25]
 1) Added monitor.py to utils for vector db management use
 

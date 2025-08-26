@@ -1,5 +1,6 @@
 .env
 .venv/
-# vectors/
+etc/
+logging/
 utils/__pycache__/
 test.py
