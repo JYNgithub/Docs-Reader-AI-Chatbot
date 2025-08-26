@@ -1,5 +1,5 @@
 .env
 .venv/
-vectors/
+# vectors/
 utils/__pycache__/
 test.py
