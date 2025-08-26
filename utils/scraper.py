@@ -9,7 +9,10 @@ from components import setup_collection, fetch_links, fetch_sitemap, scrape_page
 ########################################################
 
 # Configure library name
-LIBRARY_NAME = "nicegui" 
+LIBRARY_NAME = input("Enter library to scrape: ")
+if not LIBRARY_NAME:
+    print("No input provided. Aborting.")
+    exit()
 
 # Configure basic information
 with open("./utils/libraries.yaml") as f:

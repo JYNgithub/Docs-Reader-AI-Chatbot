@@ -1,0 +1,10 @@
+services:
+  docs-ai-chatbot:
+    build: .
+    image: jjynne/docs-ai-chatbot:latest
+    container_name: docs-ai-chatbot
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./vectors:/app/vectors
+    restart: unless-stopped

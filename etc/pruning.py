@@ -21,7 +21,7 @@ def delete_unexisting_files(path, ids):
             shutil.rmtree(full_path)
 
 ids = get_ids(os.path.join("./vectors", "chroma.sqlite3"))
-for id in ids:
+for id in sorted(ids):
     print(id)
 
 confirm = input(f"Prune? (y/n): ")

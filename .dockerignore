@@ -1,0 +1,9 @@
+.git
+.venv
+etc
+logging
+.env
+.gitignore
+CHANGELOG.md
+README.md
+test.py
