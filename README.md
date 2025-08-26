@@ -8,7 +8,7 @@ Not the 1000th PDF or document chatbot.
 
 ---
 
-# How It Works
+## How It Works
 
 Official documentations of Python libraries are scraped as vector embeddings to be used in Retrieval-Augmented Generation (RAG) for the AI chatbot. Meaning, the chatbot receives accurate information to prevent hallucination. Another thing with latest Python libraries are that changes are frequent, meaning that mainstream chatbots like ChatGPT are prone to giving outdated and deprecated code suggestions due to their slow updates. This chatbot solves this problems by directly scraping official documentation, without having to rely on inconsistent Web Search feature by other coding assistants. 
 
