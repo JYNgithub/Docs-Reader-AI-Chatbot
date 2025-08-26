@@ -20,4 +20,4 @@ As this is a hobby project, it has some limitations:
 - [ ] Dockerize and deploy (later priority)  
 
 ## Note
-Interrupting `scraper.py` can may cause bug where expected and actual collections differ
+Interrupting `scraper.py` may cause a bug where expected and actual collections differ
