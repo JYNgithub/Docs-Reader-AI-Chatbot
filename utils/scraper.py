@@ -45,7 +45,7 @@ async def main():
             LIBRARY_NAME,
             EXCLUDE_URL,
             max_links=None,
-            concurrency=5,
+            concurrency=3,
             sleep=1
         )
     else:
