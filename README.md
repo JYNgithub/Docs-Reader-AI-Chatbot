@@ -76,19 +76,7 @@ streamlit run app.py
 
 1. Chroma
 2. Pillow
-3. PySpark
-4. LangGraph
-5. LangChain
-6. Transformers
-7. Tokenizers
-8. Gradio
-9. FastAPI
-10. Psycopg2
-11. Psycopg3
-12. Redis
-13. SQLAlchemy
-14. DataBricks-SDK
-15. NiceGUI
+(More coming soon)
 
 ---
 
