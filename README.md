@@ -22,24 +22,7 @@ You may run the app via Docker or local deployment.
 
 ### via Docker
 
-1. Clone the repo
-```bash
-git clone https://github.com/JYNgithub/Docs-Reader-AI-Chatbot
-```
-
-2. Install/Launch Docker 
-
-3. Pull the pre-built image
-```bash
-docker-compose pull
-```
-
-4. Run the container
-```bash
-docker-compose up
-```
-
-5. Access the web app at http://localhost:8501/
+(Fixing)
 
 ### via Local Deployment
 
