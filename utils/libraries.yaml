@@ -23,25 +23,25 @@ pyspark:
     # - "https://spark.apache.org/docs/latest/api/python/reference/"
   tag_to_scrape: "article.bd-article"
 
-langgraph:
-  base_url:
-  - "https://langchain-ai.github.io/langgraph/"
-  exclude_url:
-  - "https://langchain-ai.github.io/langgraph/reference/"
-  - "https://langchain-ai.github.io/langgraph/agents/prebuilt/"
-  - "https://langchain-ai.github.io/langgraph/adopters/"
-  - "https://langchain-ai.github.io/langgraph/llms-txt-overview/"
-  - "https://langchain-ai.github.io/langgraph/llms-full.txt"
-  - "https://langchain-ai.github.io/langgraph/llms.txt"
-  tag_to_scrape: "div.md-content[data-md-component='content']"
+# langgraph:
+#   base_url:
+#   - "https://langchain-ai.github.io/langgraph/"
+#   exclude_url:
+#   - "https://langchain-ai.github.io/langgraph/reference/"
+#   - "https://langchain-ai.github.io/langgraph/agents/prebuilt/"
+#   - "https://langchain-ai.github.io/langgraph/adopters/"
+#   - "https://langchain-ai.github.io/langgraph/llms-txt-overview/"
+#   - "https://langchain-ai.github.io/langgraph/llms-full.txt"
+#   - "https://langchain-ai.github.io/langgraph/llms.txt"
+#   tag_to_scrape: "div.md-content[data-md-component='content']"
 
-langchain:
-  base_url:
-  - "https://python.langchain.com/docs/tutorials/"
-  - "https://python.langchain.com/docs/how_to/"
-  - "https://python.langchain.com/docs/concepts/"
-  - "https://python.langchain.com/docs/integrations/components/"
-  tag_to_scrape: "div.theme-doc-markdown.markdown"
+# langchain:
+#   base_url:
+#   - "https://python.langchain.com/docs/tutorials/"
+#   - "https://python.langchain.com/docs/how_to/"
+#   - "https://python.langchain.com/docs/concepts/"
+#   - "https://python.langchain.com/docs/integrations/components/"
+#   tag_to_scrape: "div.theme-doc-markdown.markdown"
 
 # openai:
 #   root_url: "https://platform.openai.com/"

@@ -1,7 +1,7 @@
 # DocsReader
 
 Not the 1000th PDF or document chatbot.  
-**DocsReader** is a chatbot designed to be your learning partner for up to 15 Python libraries, using **official documentation** as its source.  
+**DocsReader** is a chatbot designed to be your learning partner for up to 13 Python libraries, using **official documentation** as its source.  
 
 - Can it build your whole project with one prompt? **No**  
 - Can it help you learn new tools with accurate syntax and information? **Yes**  
@@ -10,7 +10,9 @@ Not the 1000th PDF or document chatbot.
 
 ## How It Works
 
-Official documentations of Python libraries are scraped as vector embeddings to be used in Retrieval-Augmented Generation (RAG) for the AI chatbot. Meaning, the chatbot receives accurate information to prevent hallucination. Another thing with latest Python libraries are that changes are frequent, meaning that mainstream chatbots like ChatGPT are prone to giving outdated and deprecated code suggestions due to their slow updates. This chatbot solves this problems by directly scraping official documentation, without having to rely on inconsistent Web Search feature by other coding assistants. 
+Official documentations of Python libraries are scraped as vector embeddings to be used in Retrieval-Augmented Generation (RAG) for the AI chatbot. Meaning, the chatbot receives accurate information to prevent hallucination. 
+
+As latest Python libraries are updated frequently, mainstream chatbots like ChatGPT are prone to give outdated and deprecated code suggestions due to their slow updates. This chatbot solves this problems by directly scraping official documentation, without having to rely on inconsistent Web Search feature by other coding assistants. 
 
 ---
 
@@ -76,7 +78,18 @@ streamlit run app.py
 
 1. Chroma
 2. Pillow
-(More coming soon)
+3. PySpark
+4. Transformers
+5. Tokenizers
+6. Gradio
+7. FastAPI
+8. Psycopg2
+9. Psycopg3
+10. Redis
+11. SQLAlchemy
+12. DataBricks-SDK
+13. NiceGUI
+
 
 ---
 
